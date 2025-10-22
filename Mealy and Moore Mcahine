@@ -1,0 +1,112 @@
+# -----------------------------
+# MEALY MACHINE IMPLEMENTATION
+# -----------------------------
+class MealyMachine:
+    def __init__(self):
+        # Define transitions: state -> {input: (next_state, output)}
+        self.rules = {
+            "A": {"0": ("B", "b"), "1": ("A", "b")},
+            "B": {"0": ("B", "b"), "1": ("C", "a")},
+            "C": {"0": ("A", "b"), "1": ("C", "b")},
+        }
+        self.start_state = "A"
+
+    def process(self, sequence):
+        state = self.start_state
+        output = ""
+        print("\n=== MEALY MACHINE EXECUTION ===")
+        print(f"{'Step':<6}{'Current':<10}{'Input':<8}{'Next':<10}{'Out':<8}")
+        print("-" * 44)
+
+        for i, bit in enumerate(sequence):
+            next_state, out = self.rules[state][bit]
+            print(f"{i+1:<6}{state:<10}{bit:<8}{next_state:<10}{out:<8}")
+            output += out
+            state = next_state
+
+        print(f"\nResulting Output: {output}\n")
+        return output
+
+
+# -----------------------------
+# MOORE MACHINE IMPLEMENTATION
+# -----------------------------
+class MooreMachine:
+    def __init__(self):
+        # Define states: output attached to each state
+        self.rules = {
+            "A": {"0": "B", "1": "A", "out": "b"},
+            "B": {"0": "B", "1": "C", "out": "b"},
+            "C": {"0": "A", "1": "C", "out": "a"},
+        }
+        self.start_state = "A"
+
+    def process(self, sequence):
+        state = self.start_state
+        output = self.rules[state]["out"]
+        print("\n=== MOORE MACHINE EXECUTION ===")
+        print(f"{'Step':<6}{'Current':<10}{'Input':<8}{'Next':<10}{'Out':<8}")
+        print("-" * 44)
+
+        for i, bit in enumerate(sequence):
+            next_state = self.rules[state][bit]
+            next_out = self.rules[next_state]["out"]
+            print(f"{i+1:<6}{state:<10}{bit:<8}{next_state:<10}{next_out:<8}")
+            output += next_out
+            state = next_state
+
+        print(f"\nResulting Output: {output}\n")
+        return output
+
+
+# -----------------------------
+# DIAGRAM DISPLAY (simple ASCII)
+# -----------------------------
+def show_diagrams():
+    print("\n" + "=" * 60)
+    print("                   MEALY & MOORE MACHINE DIAGRAMS")
+    print("=" * 60)
+    print("""
+MEALY MACHINE (input/output shown on transitions)
+
+     ┌───────┐      0/b       ┌───────┐
+     │   A   │ ─────────────▶ │   B   │
+     └───────┘                └───────┘
+        ▲  │1/b                   │1/a
+        │  └────────────────────▶ │
+        │                         ▼
+        │                     ┌───────┐
+        │◀─────0/b────────────│   C   │
+        └────────────────────▶ └───────┘ 1/b
+
+
+MOORE MACHINE (outputs attached to states)
+
+     ┌─────────┐0      ┌─────────┐1      ┌─────────┐
+     │  A / b  │ ───▶ │  B / b  │ ───▶ │  C / a  │
+     └─────────┘       └─────────┘       └─────────┘
+        ▲                                   │
+        │                                   │0
+        │1                                  ▼
+        └─────────────────────────────────┐
+    """)
+
+
+# -----------------------------
+# MAIN PROGRAM
+# -----------------------------
+if __name__ == "__main__":
+    show_diagrams()
+
+    # Input examples (you can change or extend these)
+    samples = ["011001", "110011", "00101"]
+
+    mealy = MealyMachine()
+    moore = MooreMachine()
+
+    for s in samples:
+        print("=" * 60)
+        print(f"INPUT STRING: {s}")
+        print("=" * 60)
+        mealy.process(s)
+        moore.process(s)
